@@ -14,16 +14,269 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          course_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          message: string
+          priority: Database["public"]["Enums"]["announcement_priority"]
+          title: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message: string
+          priority?: Database["public"]["Enums"]["announcement_priority"]
+          title: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          message?: string
+          priority?: Database["public"]["Enums"]["announcement_priority"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcements_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_images: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          image_path: string
+          title: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          image_path: string
+          title?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          image_path?: string
+          title?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_images_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_links: {
+        Row: {
+          category: string | null
+          course_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          category?: string | null
+          course_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          url: string
+        }
+        Update: {
+          category?: string | null
+          course_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_links_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          accent_color: string | null
+          code: string | null
+          created_at: string
+          description: string | null
+          id: string
+          last_updated: string
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          accent_color?: string | null
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_updated?: string
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          accent_color?: string | null
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          last_updated?: string
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          course_id: string
+          created_at: string
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          title: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          title: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          title?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          status: Database["public"]["Enums"]["account_status"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      account_status: "pending" | "approved" | "rejected"
+      announcement_priority: "normal" | "important" | "urgent"
+      app_role: "admin" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +403,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_status: ["pending", "approved", "rejected"],
+      announcement_priority: ["normal", "important", "urgent"],
+      app_role: ["admin", "student"],
+    },
   },
 } as const
