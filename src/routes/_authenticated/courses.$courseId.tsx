@@ -132,15 +132,19 @@ function CoursePage() {
         </TabsList>
 
         <TabsContent value="notes" className="mt-5">
+          <h2 className="sr-only">Notes</h2>
           <NotesTab courseId={course.id} isAdmin={isAdmin} />
         </TabsContent>
         <TabsContent value="images" className="mt-5">
+          <h2 className="sr-only">Images</h2>
           <ImagesTab courseId={course.id} isAdmin={isAdmin} />
         </TabsContent>
         <TabsContent value="links" className="mt-5">
+          <h2 className="sr-only">Links</h2>
           <LinksTab courseId={course.id} isAdmin={isAdmin} />
         </TabsContent>
         <TabsContent value="announcements" className="mt-5">
+          <h2 className="sr-only">Announcements</h2>
           <AnnouncementsTab courseId={course.id} isAdmin={isAdmin} />
         </TabsContent>
       </Tabs>
