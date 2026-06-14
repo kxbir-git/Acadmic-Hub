@@ -11,7 +11,22 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
-    meta: [{ title: "Dashboard — Kabir.io" }],
+    meta: [
+      { title: "Dashboard — Kabir.io" },
+      {
+        name: "description",
+        content:
+          "Your Kabir.io academic dashboard: browse courses, access notes, images, links, and announcements all in one place.",
+      },
+      { property: "og:title", content: "Dashboard — Kabir.io" },
+      {
+        property: "og:description",
+        content:
+          "Your Kabir.io academic dashboard: browse courses, access notes, images, links, and announcements all in one place.",
+      },
+      { property: "og:url", content: "https://academicio.lovable.app/dashboard" },
+    ],
+    links: [{ rel: "canonical", href: "https://academicio.lovable.app/dashboard" }],
   }),
   component: Dashboard,
 });

@@ -42,7 +42,34 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_authenticated/courses/$courseId")({
-  head: () => ({ meta: [{ title: "Course — Kabir.io" }] }),
+  loader: async ({ params }) => {
+    const { data } = await supabase
+      .from("courses")
+      .select("id,title,code,description")
+      .eq("id", params.courseId)
+      .maybeSingle();
+    return { course: data };
+  },
+  head: ({ params, loaderData }) => {
+    const course = loaderData?.course;
+    const title = course?.title ? `${course.title} — Kabir.io` : "Course — Kabir.io";
+    const desc = course?.description
+      ? course.description.slice(0, 160)
+      : course?.title
+        ? `Notes, images, links, and announcements for ${course.title} on Kabir.io.`
+        : "Course materials, notes, images, links, and announcements on Kabir.io.";
+    const url = `https://academicio.lovable.app/courses/${params.courseId}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:url", content: url },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: CoursePage,
 });
 
