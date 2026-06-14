@@ -105,11 +105,16 @@ function Dashboard() {
           No courses match your search.
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((c) => (
-            <CourseCard key={c.id} course={c} />
-          ))}
-        </div>
+        <section aria-labelledby="courses-heading">
+          <h2 id="courses-heading" className="mb-4 font-display text-xl font-semibold">
+            Courses
+          </h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filtered.map((c) => (
+              <CourseCard key={c.id} course={c} />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
