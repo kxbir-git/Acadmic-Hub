@@ -111,8 +111,9 @@ function AuthPage() {
             </div>
             <h1 className="mt-4 font-display text-3xl font-semibold">
               Kabir<span className="text-gradient-gold">.io</span>
+              <span className="sr-only"> — Your academic notes and notification hub</span>
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground" aria-hidden="true">
               Your academic notes &amp; notification hub
             </p>
           </div>
