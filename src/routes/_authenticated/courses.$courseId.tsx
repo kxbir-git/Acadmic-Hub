@@ -692,9 +692,22 @@ function AnnouncementsTab({ courseId, isAdmin }: { courseId: string; isAdmin: bo
                   </div>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{a.message}</p>
                 </div>
-                <span className="shrink-0 text-[11px] text-muted-foreground">
-                  {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground">
+                    {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
+                  </span>
+                  {isAdmin && (
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-7 w-7 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      onClick={() => { if (confirm(`Delete "${a.title}"?`)) remove.mutate(a.id); }}
+                      aria-label="Delete announcement"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
