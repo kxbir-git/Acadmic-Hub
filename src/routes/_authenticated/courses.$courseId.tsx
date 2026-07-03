@@ -415,24 +415,35 @@ function ImagesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean }
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {images!.map((img) => (
-            <a
-              key={img.id}
-              href={img.url}
-              target="_blank"
-              rel="noreferrer"
-              className="glass group block overflow-hidden rounded-xl"
-            >
-              <div className="aspect-square overflow-hidden bg-black/30">
-                {img.url && (
-                  <img
-                    src={img.url}
-                    alt={img.title ?? ""}
-                    className="h-full w-full object-cover transition group-hover:scale-105"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-            </a>
+            <div key={img.id} className="glass group relative block overflow-hidden rounded-xl">
+              <a href={img.url} target="_blank" rel="noreferrer" className="block">
+                <div className="aspect-square overflow-hidden bg-black/30">
+                  {img.url && (
+                    <img
+                      src={img.url}
+                      alt={img.title ?? ""}
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </a>
+              {isAdmin && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="absolute right-2 top-2 h-8 w-8 border-destructive/30 bg-destructive/20 text-destructive backdrop-blur hover:bg-destructive/30"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (confirm("Delete this image?")) remove.mutate({ id: img.id, image_path: img.image_path });
+                  }}
+                  aria-label="Delete image"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
           ))}
         </div>
       )}
