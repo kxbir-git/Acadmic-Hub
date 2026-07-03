@@ -12,6 +12,7 @@ import {
   Loader2,
   Megaphone,
   Plus,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
