@@ -490,6 +490,18 @@ function LinksTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("course_links").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Link deleted");
+      qc.invalidateQueries({ queryKey: ["links", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
