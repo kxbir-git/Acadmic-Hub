@@ -615,6 +615,18 @@ function AnnouncementsTab({ courseId, isAdmin }: { courseId: string; isAdmin: bo
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("announcements").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Announcement deleted");
+      qc.invalidateQueries({ queryKey: ["announcements", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const priorityStyle = (p: string) =>
     p === "urgent"
       ? "border-destructive/40 bg-destructive/10"
