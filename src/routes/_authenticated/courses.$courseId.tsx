@@ -228,6 +228,19 @@ function NotesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
     window.open(data.signedUrl, "_blank");
   };
 
+  const remove = useMutation({
+    mutationFn: async (n: { id: string; file_path: string }) => {
+      await supabase.storage.from("course-files").remove([n.file_path]);
+      const { error } = await supabase.from("notes").delete().eq("id", n.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Note deleted");
+      qc.invalidateQueries({ queryKey: ["notes", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
