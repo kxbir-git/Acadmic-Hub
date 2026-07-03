@@ -303,6 +303,19 @@ function NotesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
                 onClick={() => download(n.file_path, n.file_name)}>
                 <Download className="mr-2 h-3.5 w-3.5" />Download
               </Button>
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                  onClick={() => {
+                    if (confirm(`Delete "${n.title}"?`)) remove.mutate({ id: n.id, file_path: n.file_path });
+                  }}
+                  aria-label="Delete note"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
           ))}
         </div>
