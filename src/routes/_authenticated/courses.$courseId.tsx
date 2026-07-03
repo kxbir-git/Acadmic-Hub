@@ -373,6 +373,19 @@ function ImagesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean }
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (img: { id: string; image_path: string }) => {
+      await supabase.storage.from("course-images").remove([img.image_path]);
+      const { error } = await supabase.from("course_images").delete().eq("id", img.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Image deleted");
+      qc.invalidateQueries({ queryKey: ["images", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
