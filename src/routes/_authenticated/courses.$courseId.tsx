@@ -12,6 +12,7 @@ import {
   Loader2,
   Megaphone,
   Plus,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -227,6 +228,19 @@ function NotesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
     window.open(data.signedUrl, "_blank");
   };
 
+  const remove = useMutation({
+    mutationFn: async (n: { id: string; file_path: string }) => {
+      await supabase.storage.from("course-files").remove([n.file_path]);
+      const { error } = await supabase.from("notes").delete().eq("id", n.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Note deleted");
+      qc.invalidateQueries({ queryKey: ["notes", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
@@ -289,6 +303,19 @@ function NotesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
                 onClick={() => download(n.file_path, n.file_name)}>
                 <Download className="mr-2 h-3.5 w-3.5" />Download
               </Button>
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                  onClick={() => {
+                    if (confirm(`Delete "${n.title}"?`)) remove.mutate({ id: n.id, file_path: n.file_path });
+                  }}
+                  aria-label="Delete note"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
           ))}
         </div>
@@ -346,6 +373,19 @@ function ImagesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean }
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (img: { id: string; image_path: string }) => {
+      await supabase.storage.from("course-images").remove([img.image_path]);
+      const { error } = await supabase.from("course_images").delete().eq("id", img.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Image deleted");
+      qc.invalidateQueries({ queryKey: ["images", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
@@ -375,24 +415,35 @@ function ImagesTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean }
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {images!.map((img) => (
-            <a
-              key={img.id}
-              href={img.url}
-              target="_blank"
-              rel="noreferrer"
-              className="glass group block overflow-hidden rounded-xl"
-            >
-              <div className="aspect-square overflow-hidden bg-black/30">
-                {img.url && (
-                  <img
-                    src={img.url}
-                    alt={img.title ?? ""}
-                    className="h-full w-full object-cover transition group-hover:scale-105"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-            </a>
+            <div key={img.id} className="glass group relative block overflow-hidden rounded-xl">
+              <a href={img.url} target="_blank" rel="noreferrer" className="block">
+                <div className="aspect-square overflow-hidden bg-black/30">
+                  {img.url && (
+                    <img
+                      src={img.url}
+                      alt={img.title ?? ""}
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </a>
+              {isAdmin && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="absolute right-2 top-2 h-8 w-8 border-destructive/30 bg-destructive/20 text-destructive backdrop-blur hover:bg-destructive/30"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (confirm("Delete this image?")) remove.mutate({ id: img.id, image_path: img.image_path });
+                  }}
+                  aria-label="Delete image"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -439,6 +490,18 @@ function LinksTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("course_links").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Link deleted");
+      qc.invalidateQueries({ queryKey: ["links", courseId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       {isAdmin && (
@@ -480,26 +543,33 @@ function LinksTab({ courseId, isAdmin }: { courseId: string; isAdmin: boolean })
       ) : (
         <div className="grid gap-3">
           {links!.map((l) => (
-            <a
-              key={l.id}
-              href={l.url}
-              target="_blank"
-              rel="noreferrer"
-              className="glass flex items-center gap-4 rounded-xl p-4 transition hover:bg-white/10"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-accent">
-                <LinkIcon className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <div className="font-medium truncate">{l.title}</div>
-                  {l.category && <Badge variant="secondary" className="bg-white/10">{l.category}</Badge>}
+            <div key={l.id} className="glass flex items-center gap-4 rounded-xl p-4 transition hover:bg-white/10">
+              <a href={l.url} target="_blank" rel="noreferrer" className="flex flex-1 items-center gap-4 min-w-0">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-accent">
+                  <LinkIcon className="h-5 w-5" />
                 </div>
-                {l.description && <div className="text-xs text-muted-foreground truncate">{l.description}</div>}
-                <div className="text-[11px] text-muted-foreground truncate">{l.url}</div>
-              </div>
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-            </a>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="font-medium truncate">{l.title}</div>
+                    {l.category && <Badge variant="secondary" className="bg-white/10">{l.category}</Badge>}
+                  </div>
+                  {l.description && <div className="text-xs text-muted-foreground truncate">{l.description}</div>}
+                  <div className="text-[11px] text-muted-foreground truncate">{l.url}</div>
+                </div>
+                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              </a>
+              {isAdmin && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-8 w-8 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                  onClick={() => { if (confirm(`Delete "${l.title}"?`)) remove.mutate(l.id); }}
+                  aria-label="Delete link"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -541,6 +611,18 @@ function AnnouncementsTab({ courseId, isAdmin }: { courseId: string; isAdmin: bo
       toast.success("Announcement posted");
       qc.invalidateQueries({ queryKey: ["announcements", courseId] });
       setOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("announcements").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Announcement deleted");
+      qc.invalidateQueries({ queryKey: ["announcements", courseId] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -610,9 +692,22 @@ function AnnouncementsTab({ courseId, isAdmin }: { courseId: string; isAdmin: bo
                   </div>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{a.message}</p>
                 </div>
-                <span className="shrink-0 text-[11px] text-muted-foreground">
-                  {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground">
+                    {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
+                  </span>
+                  {isAdmin && (
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="h-7 w-7 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      onClick={() => { if (confirm(`Delete "${a.title}"?`)) remove.mutate(a.id); }}
+                      aria-label="Delete announcement"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
