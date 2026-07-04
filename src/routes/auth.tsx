@@ -37,16 +37,28 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    let active = true;
     (async () => {
       const { data, error } = await supabase.auth.getSession();
-      // Clear stale/invalid refresh tokens so the login form works cleanly.
+      if (!active) return;
       if (error || !data.session) {
         try { await supabase.auth.signOut({ scope: "local" } as never); } catch { /* ignore */ }
         return;
       }
       navigate({ to: "/dashboard", replace: true });
     })();
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
+        navigate({ to: "/dashboard", replace: true });
+      }
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, [navigate]);
+
 
   const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
