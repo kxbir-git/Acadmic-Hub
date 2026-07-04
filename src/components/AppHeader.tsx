@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, GraduationCap } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import type { CurrentUser } from "@/lib/use-current-user";
 
-export function AppHeader({ user }: { user: CurrentUser }) {
+export function AppHeader({ user }: { user: CurrentUser | null }) {
   const navigate = useNavigate();
 
   const signOut = async () => {
@@ -36,7 +36,7 @@ export function AppHeader({ user }: { user: CurrentUser }) {
           >
             Dashboard
           </Link>
-          {user.isAdmin && (
+          {user?.isAdmin && (
             <Link
               to="/admin"
               className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground [&.active]:bg-white/10 [&.active]:text-foreground"
@@ -47,20 +47,30 @@ export function AppHeader({ user }: { user: CurrentUser }) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden text-right sm:block">
-            <div className="text-sm font-medium leading-none">
-              {user.profile.full_name ?? user.profile.email}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {user.isAdmin ? "Administrator" : "Student"}
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out" title="Sign out">
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-            <span className="sr-only">Sign out</span>
-          </Button>
+          {user ? (
+            <>
+              <div className="hidden text-right sm:block">
+                <div className="text-sm font-medium leading-none">
+                  {user.profile.full_name ?? user.profile.email}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {user.isAdmin ? "Administrator" : "Student"}
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out" title="Sign out">
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">Sign out</span>
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/auth" })}>
+              <LogIn className="mr-2 h-4 w-4" aria-hidden="true" />
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </header>
   );
 }
+
