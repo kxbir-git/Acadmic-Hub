@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/_authenticated/courses/$courseId")({
+export const Route = createFileRoute("/courses/$courseId")({
   loader: async ({ params }) => {
     const { data } = await supabase
       .from("courses")

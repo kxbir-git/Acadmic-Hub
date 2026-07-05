@@ -9,7 +9,7 @@ import { useCurrentUser } from "@/lib/use-current-user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Kabir.io" },
