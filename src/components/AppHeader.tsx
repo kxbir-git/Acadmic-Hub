@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogIn, LogOut, ShieldCheck, GraduationCap } from "lucide-react";
+import { LogOut, ShieldCheck, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import type { CurrentUser } from "@/lib/use-current-user";
@@ -9,7 +9,7 @@ export function AppHeader({ user }: { user: CurrentUser | null }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    navigate({ to: "/auth" });
+    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -47,7 +47,7 @@ export function AppHeader({ user }: { user: CurrentUser | null }) {
         </nav>
 
         <div className="flex items-center gap-3">
-          {user ? (
+          {user && (
             <>
               <div className="hidden text-right sm:block">
                 <div className="text-sm font-medium leading-none">
@@ -62,15 +62,9 @@ export function AppHeader({ user }: { user: CurrentUser | null }) {
                 <span className="sr-only">Sign out</span>
               </Button>
             </>
-          ) : (
-            <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/auth" })}>
-              <LogIn className="mr-2 h-4 w-4" aria-hidden="true" />
-              Sign in
-            </Button>
           )}
         </div>
       </div>
     </header>
   );
 }
-
