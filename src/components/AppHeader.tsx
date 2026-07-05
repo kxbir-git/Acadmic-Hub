@@ -1,11 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, GraduationCap } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import type { CurrentUser } from "@/lib/use-current-user";
 
 export function AppHeader({ user }: { user: CurrentUser | null }) {
   const navigate = useNavigate();
+
+  const signIn = async () => {
+    await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
