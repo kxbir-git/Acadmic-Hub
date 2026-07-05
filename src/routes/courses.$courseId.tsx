@@ -43,6 +43,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/courses/$courseId")({
+  ssr: false,
   loader: async ({ params }) => {
     const { data } = await supabase
       .from("courses")
