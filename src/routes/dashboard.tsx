@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PublicShell } from "@/components/PublicShell";
 
 export const Route = createFileRoute("/dashboard")({
   ssr: false,
@@ -71,6 +72,7 @@ function Dashboard() {
   }, [courses, q]);
 
   return (
+    <PublicShell>
     <div className="space-y-10">
       <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
@@ -118,6 +120,7 @@ function Dashboard() {
         </section>
       )}
     </div>
+    </PublicShell>
   );
 }
 
