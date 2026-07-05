@@ -180,6 +180,7 @@ function CoursePage() {
         </TabsContent>
       </Tabs>
     </div>
+    </PublicShell>
   );
 }
 
